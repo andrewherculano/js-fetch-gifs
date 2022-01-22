@@ -3,9 +3,14 @@ import { apiKey } from '../modules/api-key.js'
 const form = document.querySelector('form')
 const gifsContainer = document.querySelector('.gifs-container')
 
+const getUrl = (value) => {
+   return `https://api.giphy.com/v1/gifs/search?api_key=${apiKey}&limit=1&q=${value}`
+}
+
 const fetchGifData = async (value) => {
    try {
-      const response = await fetch(`https://api.giphy.com/v1/gifs/search?api_key=${apiKey}&limit=1&q=${value}`)
+      const url = getUrl(value)
+      const response = await fetch(url)
 
       if (!response.ok) {
          throw new Error('Não foi possível obter os dados da api')
@@ -30,6 +35,15 @@ const getGifTitle = async (value) => {
    return title
 }
 
+const gifCardHTML = (gifUrl, gifTitle) => {
+   gifsContainer.innerHTML += `
+   <div class="gifs-card">
+      <img src="${gifUrl}">
+      <p>${gifTitle}</p>
+   </div>
+`
+}
+
 form.addEventListener('submit', async event => {
    event.preventDefault()
 
@@ -37,10 +51,5 @@ form.addEventListener('submit', async event => {
    const gifUrl = await getGifUrlImage(inputValue)
    const gifTitle = await getGifTitle(inputValue)
 
-   gifsContainer.innerHTML += `
-      <div class="gifs-card">
-         <img src="${gifUrl}">
-         <p>${gifTitle}</p>
-      </div>
-   `
+   gifCardHTML(gifUrl, gifTitle)
 })
